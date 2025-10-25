@@ -71,22 +71,271 @@ One note before you delve into your tasks: for each endpoint, you are expected t
 
 You will need to provide detailed documentation of your API endpoints including the URL, request parameters, and the response body. Use the example below as a reference.
 
-### Documentation Example
+## API Documentation
 
-`GET '/api/v1.0/categories'`
+### Endpoint Documentation
 
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, `categories`, that contains an object of `id: category_string` key: value pairs.
+#### GET `/categories`
+
+Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category.
+
+- **Request Arguments:** None
+- **Returns:** An object with keys `success` and `categories`, that contains an object of `id: category_string` key:value pairs.
 
 ```json
 {
-  "1": "Science",
-  "2": "Art",
-  "3": "Geography",
-  "4": "History",
-  "5": "Entertainment",
-  "6": "Sports"
+  "success": true,
+  "categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  }
+}
+```
+
+---
+
+#### GET `/questions`
+
+Fetches a paginated list of questions.
+
+- **Request Arguments:** 
+  - `page` (optional, default: 1) - Page number for pagination
+- **Returns:** An object with keys `success`, `questions`, `total_questions`, `categories`, and `current_category`.
+
+```json
+{
+  "success": true,
+  "questions": [
+    {
+      "id": 2,
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?",
+      "answer": "Apollo 13",
+      "category": 5,
+      "difficulty": 4
+    }
+  ],
+  "total_questions": 19,
+  "categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  },
+  "current_category": null
+}
+```
+
+---
+
+#### DELETE `/questions/<question_id>`
+
+Deletes a question by ID.
+
+- **Request Arguments:** 
+  - `question_id` (path parameter) - The ID of the question to delete
+- **Returns:** An object with keys `success` and `deleted`.
+
+Success Response:
+```json
+{
+  "success": true,
+  "deleted": 5
+}
+```
+
+Error Response (404):
+```json
+{
+  "success": false,
+  "error": 404,
+  "message": "Resource not found"
+}
+```
+
+---
+
+#### POST `/questions`
+
+Creates a new question or searches for questions.
+
+**Creating a Question:**
+- **Request Body:** 
+  ```json
+  {
+    "question": "What is the capital of France?",
+    "answer": "Paris",
+    "category": 3,
+    "difficulty": 1
+  }
+  ```
+- **Returns:** An object with keys `success` and `created`.
+
+```json
+{
+  "success": true,
+  "created": 24
+}
+```
+
+**Searching Questions:**
+- **Request Body:** 
+  ```json
+  {
+    "searchTerm": "painting"
+  }
+  ```
+- **Returns:** An object with keys `success`, `questions`, `total_questions`, and `current_category`.
+
+```json
+{
+  "success": true,
+  "questions": [
+    {
+      "id": 18,
+      "question": "How many paintings did Van Gogh sell in his lifetime?",
+      "answer": "One",
+      "category": 2,
+      "difficulty": 4
+    }
+  ],
+  "total_questions": 1,
+  "current_category": null
+}
+```
+
+Error Response (400):
+```json
+{
+  "success": false,
+  "error": 400,
+  "message": "Bad request"
+}
+```
+
+---
+
+#### GET `/categories/<category_id>/questions`
+
+Fetches all questions for a specific category.
+
+- **Request Arguments:** 
+  - `category_id` (path parameter) - The ID of the category
+- **Returns:** An object with keys `success`, `questions`, `total_questions`, and `current_category`.
+
+Success Response:
+```json
+{
+  "success": true,
+  "questions": [
+    {
+      "id": 20,
+      "question": "What is the heaviest organ in the human body?",
+      "answer": "The Liver",
+      "category": 1,
+      "difficulty": 4
+    }
+  ],
+  "total_questions": 3,
+  "current_category": "Science"
+}
+```
+
+Error Response (404):
+```json
+{
+  "success": false,
+  "error": 404,
+  "message": "Resource not found"
+}
+```
+
+---
+
+#### POST `/quizzes`
+
+Retrieves a random question for the quiz game.
+
+- **Request Body:** 
+  ```json
+  {
+    "previous_questions": [20, 21],
+    "quiz_category": {
+      "type": "Science",
+      "id": 1
+    }
+  }
+  ```
+  - `previous_questions` (array) - List of question IDs already shown
+  - `quiz_category` (object) - Category object with `type` and `id`. Use `{"type": "click", "id": 0}` for all categories
+- **Returns:** An object with keys `success` and `question`.
+
+Success Response:
+```json
+{
+  "success": true,
+  "question": {
+    "id": 22,
+    "question": "Hematology is a branch of medicine involving the study of what?",
+    "answer": "Blood",
+    "category": 1,
+    "difficulty": 4
+  }
+}
+```
+
+No More Questions:
+```json
+{
+  "success": true,
+  "question": null
+}
+```
+
+---
+
+### Error Handling
+
+The API returns standard error responses:
+
+#### 400 Bad Request
+```json
+{
+  "success": false,
+  "error": 400,
+  "message": "Bad request"
+}
+```
+
+#### 404 Not Found
+```json
+{
+  "success": false,
+  "error": 404,
+  "message": "Resource not found"
+}
+```
+
+#### 422 Unprocessable Entity
+```json
+{
+  "success": false,
+  "error": 422,
+  "message": "Unprocessable entity"
+}
+```
+
+#### 500 Internal Server Error
+```json
+{
+  "success": false,
+  "error": 500,
+  "message": "Internal server error"
 }
 ```
 
