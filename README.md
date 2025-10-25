@@ -483,4 +483,4 @@ This project is licensed under the MIT License.
 
 ## Author
 
-Developed as part of the Udacity Full Stack Web Developer Nanodegree Program.
+Developed as part of the Udacity Backend with Python Nanodegree Program.
